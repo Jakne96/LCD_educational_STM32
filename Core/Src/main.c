@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "dma.h"
 #include "spi.h"
 #include "gpio.h"
@@ -29,6 +30,7 @@
 #include "font6x9.h"
 #include "rgb565.h"
 #include "metaballs.h"
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,15 +56,6 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-
-void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
-	{
-		if (hspi == &hspi2)
-		{
-			lcd_transfer_done();
-//			HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
-		}
-	}
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -103,6 +96,7 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_SPI2_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -116,37 +110,42 @@ int main(void)
 //  hagl_put_text(L"Hello World!", 40, 55, YELLOW, font6x9);
 //  lcd_copy();
 
+  volatile static uint16_t value[2];
+
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)value, 2);
+
+//  uint16_t pos_x = value[0] % 128;
+//  uint16_t pos_y = value[1] % 160;
+
   lcd_init();
-  metaballs_init();
+  uint16_t pos_x = 0;
+  uint16_t pos_y = 0;
+
+
+  hagl_fill_circle(64,64,20,(rand() % 0xffff));
+  hagl_fill_circle(64,64,20,0);
+  hagl_fill_circle(pos_x+13,pos_y-3,5,0xF);
+  lcd_copy();
+
+  /*
+   * Mapowanie
+   *
+   */
+
+//Dobra czyli sie zmienia tylko zakresy trzeba dopracować
   while (1)
   {
-    metaballs_animate();
-    while (lcd_is_busy()) {}
-    metaballs_render();
-    lcd_copy();
+	uint16_t new_pos_x = value[0] / 30;
+	uint16_t new_pos_y = value[1] / 30;
 
-//
-//  for (int y = 0; y < LCD_HEIGHT; y++) {
-//    for (int x = 0; x < LCD_WIDTH; x++) {
-//      lcd_put_pixel(x, y, __REV16(x / 10 + y * 16));
-//    }
-//  }
-//  lcd_copy();
-
-  //rysowanie krzyża
-//  for(int i = 0; i < 128; i++){
-//	  lcd_put_pixel(i, i, RED);
-//	  lcd_put_pixel(127 - i, i, RED);
-//  }
-//
-//  lcd_draw_image(0, 0, 157, 86, judas);
-
-//  for (int i = 0; i < 64 * 64; i++)
-//      test_image[i] = __REV16(BLUE);//to rev16 odwraca bity// w sensie nie że robi inversje że 1 =0 tylko odwraca kolejność, pomyśleć jak to zroibć operacjami bitowymi
-
-
-
-
+	if(new_pos_x != pos_x){
+		hagl_fill_circle(pos_x+13,pos_y-3,5,0);//zaciemnienie starego kółka
+		pos_x = new_pos_x;
+		pos_y = new_pos_y;
+		hagl_fill_circle(pos_x+13,pos_y-3,5,0xF);
+		lcd_copy();
+		HAL_Delay(250);//zrobienie nowego kółka
+	}else{}
 
 
     /* USER CODE END WHILE */

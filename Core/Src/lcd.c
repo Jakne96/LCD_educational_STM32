@@ -110,30 +110,6 @@ static void lcd_set_window(int x, int y, int width, int height)
   lcd_data16(LCD_OFFSET_Y + y + height- 1);
 }
 
-//void lcd_fill_box(int x, int y, int width, int height, uint16_t color)
-//{
-//	lcd_set_window(x, y, width, height);
-//	lcd_cmd(ST7735S_RAMWR);
-//	for (int i = 0; i < width * height; i++)
-//		lcd_data16(color);
-//}
-
-//void lcd_put_pixel(int x, int y, uint16_t color)
-//{
-//	lcd_fill_box(x, y, 1, 1, color);
-//}
-
-//void lcd_draw_image(int x, int y, int width, int height, const uint8_t* data){
-//	lcd_set_window(x, y, width, height);
-//
-//	lcd_cmd(ST7735S_RAMWR);
-//	HAL_GPIO_WritePin(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_SET);
-//	HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
-//	HAL_SPI_Transmit(&hspi2, (uint8_t*)data, width * height * 2, HAL_MAX_DELAY);
-//	HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
-//
-//}
-
 static uint16_t frame_buffer[LCD_WIDTH * LCD_HEIGHT];
 void lcd_put_pixel(int x, int y, uint16_t color)
 {
