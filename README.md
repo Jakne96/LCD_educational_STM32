@@ -1,7 +1,7 @@
 # LCD_educational_STM32
 
 ## Project type:
-Portfolio
+TBD
 
 ## Status
 In progress
@@ -13,3 +13,4 @@ It uses hagl library for geometry creation
 Demo includes moving cursor around the display using the analog stick.
 
 ## Demo
+https://youtube.com/shorts/ckKN-06cNA4
